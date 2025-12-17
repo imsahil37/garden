@@ -121,23 +121,66 @@ export class OrbsManager {
         groundPos.y = 1; // Approx ground level
         this.flowerManager.spawnFlower(groundPos, index);
 
-        // Disable orb interaction and hide/fade it
+        // Disable orb interaction
         const orbData = this.orbs[index];
         orbData.collected = true;
         orbData.hitMesh.userData.isInteractable = false;
 
-        // Animate out
-        // Simple scale down for now, handled in update
+        // Create Parachute
+        this.createParachute(orbGroup, orbData.main.material.color);
+
+        // Set flag to fly away
+        orbData.flying = true;
+    }
+
+    createParachute(orbGroup, color) {
+        const chuteGeo = new THREE.SphereGeometry(0.5, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+        const chuteMat = new THREE.MeshStandardMaterial({
+            color: color,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.8,
+            emissive: color,
+            emissiveIntensity: 0.5
+        });
+        const chute = new THREE.Mesh(chuteGeo, chuteMat);
+        chute.position.y = 0.5;
+
+        // Strings
+        const linesGeo = new THREE.BufferGeometry();
+        const vertices = [];
+        const count = 8;
+        for(let i=0; i<count; i++) {
+            const angle = (i / count) * Math.PI * 2;
+            const x = Math.cos(angle) * 0.5;
+            const z = Math.sin(angle) * 0.5;
+            vertices.push(0, 0, 0); // Orb center
+            vertices.push(x, 0.5, z); // Chute rim
+        }
+        linesGeo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        const linesMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
+        const lines = new THREE.LineSegments(linesGeo, linesMat);
+
+        orbGroup.add(chute);
+        orbGroup.add(lines);
     }
 
     update(time) {
         this.orbs.forEach((orb, i) => {
             if (orb.collected) {
-                // Fade out/scale down
-                if (orb.group.scale.x > 0.01) {
-                    orb.group.scale.subScalar(0.05);
-                } else {
-                    orb.group.visible = false;
+                if (orb.flying) {
+                     // Float up
+                     orb.group.position.y += 0.05;
+                     orb.group.position.x += Math.sin(time * 0.001 + i) * 0.01;
+                     orb.group.position.z += Math.cos(time * 0.001 + i) * 0.01;
+
+                     // Gently sway rotation
+                     orb.group.rotation.z = Math.sin(time * 0.002) * 0.1;
+
+                     if (orb.group.position.y > 30) {
+                         orb.group.visible = false;
+                         orb.flying = false;
+                     }
                 }
                 return;
             }

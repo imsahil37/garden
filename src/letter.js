@@ -17,6 +17,13 @@ export class LetterManager {
              this.closeLetter();
         });
 
+        // Click on letter to skip typing
+        this.letterView.addEventListener('click', () => {
+             if (this.isTyping) {
+                 this.skipTyping = true;
+             }
+        });
+
         state.on('actChanged', (act) => {
             if (act === 5) {
                 this.showLetter();
@@ -39,11 +46,18 @@ export class LetterManager {
         this.letterSignature.textContent = '';
         this.closeBtn.classList.add('hidden');
 
+        // Speed up typing: 10-30ms instead of 30-80ms
         for (let i = 0; i < content.length; i++) {
             this.letterContent.textContent += content[i];
-            state.emit('typeChar');
-            // Random delay for typing effect
-            await new Promise(r => setTimeout(r, 30 + Math.random() * 50));
+            if (i % 3 === 0) state.emit('typeChar'); // Emit sound less frequently
+
+            // Allow skipping by clicking
+            if (this.skipTyping) {
+                 this.letterContent.textContent = content;
+                 break;
+            }
+
+            await new Promise(r => setTimeout(r, 10 + Math.random() * 20));
         }
 
         // Show signature

@@ -52,19 +52,28 @@ export class Island {
 
         // 3. Pond
         const pondRadius = 2;
-        const pondGeometry = new THREE.CircleGeometry(pondRadius, 32);
-        const pondMaterial = new THREE.MeshStandardMaterial({
+        const pondGeometry = new THREE.CircleGeometry(pondRadius, 64);
+        const pondMaterial = new THREE.MeshPhysicalMaterial({
             color: 0x4a90d9,
             roughness: 0.1,
-            metalness: 0.8,
+            metalness: 0.1,
+            transmission: 0.6,
+            thickness: 0.5,
             transparent: true,
-            opacity: 0.9
+            opacity: 0.8
         });
         this.pond = new THREE.Mesh(pondGeometry, pondMaterial);
         this.pond.rotation.x = -Math.PI / 2;
         this.pond.position.y = thickness + 0.05; // Slightly above grass
         this.pond.position.x = 2; // Offset
         this.pond.position.z = 1;
+
+        // Add random displacement for initial wave state
+        const pos = this.pond.geometry.attributes.position;
+        for(let i=0; i<pos.count; i++) {
+            pos.setZ(i, pos.getZ(i) + Math.random() * 0.05);
+        }
+
         this.group.add(this.pond);
 
         // Stones around pond
@@ -144,5 +153,19 @@ export class Island {
     update(time) {
         // Subtle floating animation for the whole island
         this.group.position.y = Math.sin(time * 0.0005) * 0.2;
+
+        // Animate pond waves
+        if (this.pond) {
+            const pos = this.pond.geometry.attributes.position;
+            for(let i=0; i<pos.count; i++) {
+                // Circular wave effect
+                const x = pos.getX(i);
+                const y = pos.getY(i);
+                const dist = Math.sqrt(x*x + y*y);
+                const z = Math.sin(dist * 5 - time * 0.002) * 0.05 + Math.sin(x * 3 + time * 0.001) * 0.02;
+                pos.setZ(i, z);
+            }
+            pos.needsUpdate = true;
+        }
     }
 }
