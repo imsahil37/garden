@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Garden of Us</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Georgia&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="loading-screen" class="screen">
+        <div class="content">
+            <h1 class="title">The Garden of Us</h1>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <p id="loading-text" class="fade-text">Planting seeds...</p>
+            <button id="enter-btn" class="hidden">Enter the Garden</button>
+        </div>
+    </div>
+
+    <div id="ui-container">
+        <!-- Persistent UI -->
+        <button id="audio-toggle" class="icon-btn" aria-label="Toggle Audio">🔊</button>
+
+        <!-- Memory Popup -->
+        <div id="memory-popup" class="popup hidden">
+            <div class="popup-content glass">
+                <h2 id="memory-title"></h2>
+                <p id="memory-text"></p>
+                <button id="close-memory-btn">Close</button>
+            </div>
+        </div>
+
+        <!-- Story Overlay -->
+        <div id="story-overlay" class="overlay hidden">
+            <p id="story-text" class="fade-text"></p>
+        </div>
+
+        <!-- Letter View -->
+        <div id="letter-view" class="popup hidden">
+            <div class="letter-paper">
+                <div id="letter-content"></div>
+                <div id="letter-signature"></div>
+                <button id="close-letter-btn" class="hidden">Close & Continue</button>
+            </div>
+        </div>
+
+        <!-- Choice View -->
+        <div id="choice-view" class="screen hidden">
+            <div class="content glass">
+                <h2>What comes next?</h2>
+                <div class="choices">
+                    <button class="choice-btn" data-choice="forgive">💚 I forgive you</button>
+                    <button class="choice-btn" data-choice="message">💌 Leave a message</button>
+                    <button class="choice-btn" data-choice="time">🚶 I need time</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Choice Input/Confirmation -->
+         <div id="message-input-view" class="popup hidden">
+            <div class="popup-content glass">
+                <h3>Leave a message</h3>
+                <textarea id="message-text" placeholder="Write your message here..."></textarea>
+                <div class="buttons">
+                    <button id="cancel-message-btn">Cancel</button>
+                    <button id="send-message-btn">Send</button>
+                </div>
+            </div>
+        </div>
+
+         <div id="final-message-view" class="popup hidden">
+             <div class="popup-content glass">
+                <h2 id="final-title"></h2>
+                <p id="final-body"></p>
+             </div>
+         </div>
+
+    </div>
+
+    <canvas id="canvas"></canvas>
+    <script type="module" src="/main.js"></script>
+</body>
+</html>

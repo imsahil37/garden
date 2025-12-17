@@ -1,0 +1,263 @@
+:root {
+  /* Backgrounds */
+  --bg-dark: #0a0a15;
+  --bg-medium: #1a1a2e;
+  --bg-light: #2a2a4e;
+
+  /* Accents */
+  --accent-cyan: #88ccff;
+  --accent-pink: #ff88aa;
+  --accent-green: #88ff88;
+  --accent-gold: #ffdd88;
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.5);
+
+  /* UI */
+  --ui-border: rgba(255, 255, 255, 0.2);
+  --ui-bg: rgba(0, 0, 0, 0.7);
+  --ui-glass: rgba(255, 255, 255, 0.1);
+  --ui-glass-blur: blur(10px);
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+    font-family: 'Georgia', serif;
+    color: var(--text-primary);
+    user-select: none;
+}
+
+canvas {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+}
+
+#ui-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none; /* Allow clicks to pass through to canvas by default */
+}
+
+/* Enable pointer events on interactive elements */
+button, .popup, .screen, .overlay {
+    pointer-events: auto;
+}
+
+.hidden {
+    display: none !important;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Loading Screen */
+.screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-dark);
+    z-index: 20;
+    transition: opacity 1s ease;
+}
+
+.content {
+    text-align: center;
+    max-width: 600px;
+    padding: 2rem;
+}
+
+.title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    letter-spacing: 2px;
+}
+
+.progress-bar {
+    width: 200px;
+    height: 2px;
+    background: var(--text-muted);
+    margin: 0 auto 1rem;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--text-primary);
+    width: 0%;
+    transition: width 0.2s ease;
+}
+
+.fade-text {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    min-height: 1.5em;
+    transition: opacity 0.5s ease;
+}
+
+button {
+    background: transparent;
+    border: 1px solid var(--text-primary);
+    color: var(--text-primary);
+    padding: 0.8rem 2rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 30px;
+    margin-top: 1rem;
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Glass UI */
+.glass {
+    background: var(--ui-glass);
+    backdrop-filter: var(--ui-glass-blur);
+    border: 1px solid var(--ui-border);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Popup */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 15;
+    transition: opacity 0.3s ease;
+}
+
+.popup-content {
+    max-width: 500px;
+    width: 80%;
+    text-align: center;
+}
+
+#memory-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: var(--accent-gold);
+    margin-top: 0;
+}
+
+/* Letter */
+.letter-paper {
+    background: #fdfbf7;
+    color: #2c2c2c;
+    padding: 4rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    border-radius: 2px;
+    position: relative;
+}
+
+#letter-content {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    text-align: left;
+}
+
+#letter-signature {
+    text-align: right;
+    margin-top: 2rem;
+    font-weight: bold;
+}
+
+/* Overlay */
+.overlay {
+    position: fixed;
+    bottom: 20%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    pointer-events: none;
+}
+
+#story-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Audio Toggle */
+#audio-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    border: none;
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    margin: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.3);
+}
+
+/* Choice Buttons */
+.choices {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.choice-btn {
+    width: 100%;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    margin: 1rem 0;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid var(--ui-border);
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    font-family: inherit;
+    resize: none;
+}
+
+@media (min-width: 768px) {
+    .choices {
+        flex-direction: row;
+    }
+}
