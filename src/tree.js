@@ -14,6 +14,16 @@ export class TreeManager {
         this.leaves = [];
         this.lanterns = [];
 
+        // Colors from orbs (hardcoded for now as per orbs.js)
+        this.orbColors = [
+            0x88ddff, // Cyan
+            0xffaadd, // Pink
+            0xaaffaa, // Green
+            0xffffaa, // Yellow
+            0xddaaff, // Purple
+            0xffccaa  // Orange
+        ];
+
         this.init();
     }
 
@@ -85,40 +95,112 @@ export class TreeManager {
             this.leaves.push(mesh);
         });
 
+        // --- Fairy Lights ---
+        // Spiraling up the trunk
+        this.createFairyLights(trunkPath);
+
         // --- Lanterns ---
         const lanternPositions = [
-             [1, 4, 1], [-1, 3.5, -1], [1.2, 3.8, -0.5], [-0.8, 4.2, 1.2]
+             [1, 4, 1], [-1, 3.5, -1], [1.2, 3.8, -0.5], [-0.8, 4.2, 1.2],
+             [0.5, 4.5, 1.5], [-1.5, 4.0, 0.5] // Added 2 more to make 6
         ];
 
-        lanternPositions.forEach(pos => {
-            const lanternGeo = new THREE.SphereGeometry(0.15, 16, 16);
+        lanternPositions.forEach((pos, i) => {
+            const color = this.orbColors[i % this.orbColors.length];
+            const lanternGroup = new THREE.Group();
+            lanternGroup.position.set(...pos);
+
+            // Core Sphere (The Lantern)
+            const lanternGeo = new THREE.SphereGeometry(0.2, 16, 16);
             const lanternMat = new THREE.MeshStandardMaterial({
-                color: 0xffaa00,
-                emissive: 0xff9900,
-                emissiveIntensity: 2.0
+                color: color,
+                emissive: color,
+                emissiveIntensity: 3.0 // Brighter
             });
             const lantern = new THREE.Mesh(lanternGeo, lanternMat);
-            lantern.position.set(...pos);
-            this.group.add(lantern);
+            lanternGroup.add(lantern);
 
-            // Halo Glow (Glassy Ambient Glow)
-            const haloGeo = new THREE.SphereGeometry(0.3, 16, 16);
+            // Halo Glow (Glassy Ambient Glow) - Large
+            const haloGeo = new THREE.SphereGeometry(0.5, 16, 16);
             const haloMat = new THREE.MeshBasicMaterial({
-                color: 0xffaa00,
+                color: color,
+                transparent: true,
+                opacity: 0.2,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+                side: THREE.BackSide
+            });
+            const halo = new THREE.Mesh(haloGeo, haloMat);
+            lanternGroup.add(halo);
+
+            // Inner Halo for intensity
+            const innerHaloGeo = new THREE.SphereGeometry(0.3, 16, 16);
+            const innerHaloMat = new THREE.MeshBasicMaterial({
+                color: color,
                 transparent: true,
                 opacity: 0.4,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false
             });
-            const halo = new THREE.Mesh(haloGeo, haloMat);
-            lantern.add(halo);
+            const innerHalo = new THREE.Mesh(innerHaloGeo, innerHaloMat);
+            lanternGroup.add(innerHalo);
 
             // Point light
-            const light = new THREE.PointLight(0xffaa00, 1.0, 5);
-            lantern.add(light);
+            const light = new THREE.PointLight(color, 1.5, 6);
+            lanternGroup.add(light);
 
-            this.lanterns.push({ mesh: lantern, baseY: pos[1], offset: Math.random() * 10 });
+            this.group.add(lanternGroup);
+            this.lanterns.push({ mesh: lanternGroup, baseY: pos[1], offset: Math.random() * 10 });
         });
+    }
+
+    createFairyLights(path) {
+        const points = [];
+        const count = 100;
+
+        // Spiral around the path
+        for(let i=0; i<=count; i++) {
+            const t = i / count;
+            const pointOnPath = path.getPointAt(t);
+            const tangent = path.getTangentAt(t);
+            const normal = new THREE.Vector3(1,0,0).applyAxisAngle(tangent, Math.PI/2); // Basic normal
+
+            const radius = 0.45 * (1 - t * 0.5); // Tapering radius matching trunk
+            const angle = t * Math.PI * 10; // 5 rotations
+
+            // Displace from center
+            const x = Math.cos(angle) * radius;
+            const z = Math.sin(angle) * radius;
+
+            // Rotate displacement to align with path
+            const dummy = new THREE.Object3D();
+            dummy.lookAt(tangent);
+            const displacement = new THREE.Vector3(x, 0, z);
+            // Simplified displacement logic since lookAt alignment is tricky without frames
+            // Just add spiraling manually around Y since trunk is mostly vertical
+
+            const pos = new THREE.Vector3(
+                pointOnPath.x + Math.cos(angle) * radius,
+                pointOnPath.y,
+                pointOnPath.z + Math.sin(angle) * radius
+            );
+
+            points.push(pos.x, pos.y, pos.z);
+        }
+
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
+
+        const mat = new THREE.PointsMaterial({
+            color: 0xffffee,
+            size: 0.05,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+
+        this.fairyLights = new THREE.Points(geo, mat);
+        this.group.add(this.fairyLights);
     }
 
     update(time) {
@@ -137,8 +219,15 @@ export class TreeManager {
             // Lanterns float
             this.lanterns.forEach(l => {
                 l.mesh.position.y = l.baseY + Math.sin(time * 0.002 + l.offset) * 0.05;
-                l.mesh.material.emissiveIntensity = 0.8 + Math.sin(time * 0.005 + l.offset) * 0.4;
+                // Pulse effect
+                // l.mesh.children[0] is the main sphere
+                // l.mesh.children[0].material.emissiveIntensity = 2.0 + Math.sin(time * 0.005 + l.offset) * 1.0;
             });
+
+            // Twinkle fairy lights
+            if (this.fairyLights) {
+                 this.fairyLights.material.opacity = 0.6 + Math.sin(time * 0.005) * 0.2;
+            }
         }
     }
 }

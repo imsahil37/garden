@@ -8,8 +8,15 @@ export class FlowersManager {
         this.group = new THREE.Group();
         this.scene.add(this.group);
 
-        // Colors from spec
-        this.colors = [0xffb6c1, 0xffd1dc, 0xdda0dd, 0xe6e6fa, 0xfff0f5, 0xffe4e1];
+        // Colors from orbs (duplicated for reference, but we use the index to pick)
+        this.colors = [
+            0x88ddff, // Cyan
+            0xffaadd, // Pink
+            0xaaffaa, // Green
+            0xffffaa, // Yellow
+            0xddaaff, // Purple
+            0xffccaa  // Orange
+        ];
     }
 
     spawnFlower(position, index) {
@@ -19,50 +26,87 @@ export class FlowersManager {
         flowerGroup.position.copy(position);
         flowerGroup.scale.setScalar(0); // Start small for animation
 
-        // Stem
-        const stemGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.5, 8);
+        // --- Stem ---
+        // Slightly thicker and taller
+        const stemGeo = new THREE.CylinderGeometry(0.03, 0.04, 0.6, 8);
         const stemMat = new THREE.MeshStandardMaterial({ color: 0x4caf50 });
         const stem = new THREE.Mesh(stemGeo, stemMat);
-        stem.position.y = 0.25;
+        stem.position.y = 0.3;
         flowerGroup.add(stem);
 
-        // Center
-        const centerGeo = new THREE.SphereGeometry(0.1, 16, 16);
-        const centerMat = new THREE.MeshStandardMaterial({
-            color: 0xffff00,
-            emissive: 0xffff00,
+        // --- Petal Group (for complex flower) ---
+        const petalGroup = new THREE.Group();
+        petalGroup.position.y = 0.6;
+        flowerGroup.add(petalGroup);
+
+        // Layer 1: Outer Petals
+        const petalGeo = new THREE.CircleGeometry(0.25, 16); // Larger petals
+        const petalMat = new THREE.MeshStandardMaterial({
+            color: color,
+            side: THREE.DoubleSide,
+            emissive: color,
             emissiveIntensity: 0.5
         });
-        const center = new THREE.Mesh(centerGeo, centerMat);
-        center.position.y = 0.5;
-        flowerGroup.add(center);
 
-        // Petals
-        const petalCount = 6;
-        for(let i=0; i<petalCount; i++) {
-            const angle = (i / petalCount) * Math.PI * 2;
-            const petalGeo = new THREE.CircleGeometry(0.15, 16);
-            const petalMat = new THREE.MeshStandardMaterial({
-                color: color,
-                side: THREE.DoubleSide,
-                emissive: color,
-                emissiveIntensity: 0.3
-            });
+        const outerCount = 6;
+        for(let i=0; i<outerCount; i++) {
+            const angle = (i / outerCount) * Math.PI * 2;
             const petal = new THREE.Mesh(petalGeo, petalMat);
-
-            petal.position.y = 0.5;
-            petal.rotation.x = -Math.PI / 2; // Lay flat
+            petal.rotation.x = -Math.PI / 2.2; // Slightly angled up
             petal.rotation.z = angle;
-            petal.translateX(0.12); // Move out from center
-
-            flowerGroup.add(petal);
+            petal.translateX(0.15); // Move out from center
+            petalGroup.add(petal);
         }
+
+        // Layer 2: Inner Petals (Smaller, darker or lighter, rotated)
+        const innerGeo = new THREE.CircleGeometry(0.15, 16);
+        const innerMat = new THREE.MeshStandardMaterial({
+            color: color,
+            side: THREE.DoubleSide,
+            emissive: color,
+            emissiveIntensity: 0.8
+        });
+
+        const innerCount = 5;
+        for(let i=0; i<innerCount; i++) {
+            const angle = (i / innerCount) * Math.PI * 2 + (Math.PI / outerCount); // Offset angle
+            const petal = new THREE.Mesh(innerGeo, innerMat);
+            petal.rotation.x = -Math.PI / 2.5; // More angled up
+            petal.rotation.z = angle;
+            petal.translateX(0.1);
+            petalGroup.add(petal);
+        }
+
+        // --- Center ---
+        const centerGeo = new THREE.SphereGeometry(0.08, 16, 16);
+        const centerMat = new THREE.MeshStandardMaterial({
+            color: 0xffffaa,
+            emissive: 0xffffaa,
+            emissiveIntensity: 1.0
+        });
+        const center = new THREE.Mesh(centerGeo, centerMat);
+        center.position.y = 0.05; // Relative to petalGroup
+        petalGroup.add(center);
+
+        // --- Ambient Glow ---
+        const glowGeo = new THREE.SphereGeometry(0.6, 16, 16);
+        const glowMat = new THREE.MeshBasicMaterial({
+            color: color,
+            transparent: true,
+            opacity: 0.3,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            side: THREE.BackSide
+        });
+        const glow = new THREE.Mesh(glowGeo, glowMat);
+        glow.position.y = 0.6;
+        flowerGroup.add(glow);
 
         this.group.add(flowerGroup);
 
         this.flowers.push({
             group: flowerGroup,
-            targetScale: 1.0,
+            targetScale: 1.8, // Bigger scale as requested
             currentScale: 0.0
         });
 
@@ -86,30 +130,25 @@ export class FlowersManager {
             const petalCount = 8;
             for(let j=0; j<petalCount; j++) {
                 const pAngle = (j / petalCount) * Math.PI * 2;
-                const pGeo = new THREE.CircleGeometry(0.2, 16);
+                const pGeo = new THREE.CircleGeometry(0.25, 16); // Slightly bigger
                 const pMat = new THREE.MeshStandardMaterial({
                     color: petalColor,
                     side: THREE.DoubleSide,
                     emissive: petalColor,
-                    emissiveIntensity: 2.0
+                    emissiveIntensity: 1.5
                 });
                 const petal = new THREE.Mesh(pGeo, pMat);
                 petal.rotation.x = -Math.PI / 3; // Angled up
                 petal.rotation.y = pAngle;
                 // Move out slightly
-                petal.translateX(0.05);
+                petal.translateX(0.08);
 
                 lotusGroup.add(petal);
             }
 
-            // Center Light (Removed for performance, using high emissive instead)
-            // const light = new THREE.PointLight(0xff69b4, 1, 2);
-            // light.position.y = 0.2;
-            // lotusGroup.add(light);
-
             // Add a glowing center mesh instead
-            const glowGeo = new THREE.SphereGeometry(0.15, 8, 8);
-            const glowMat = new THREE.MeshBasicMaterial({ color: 0xff69b4, transparent: true, opacity: 0.8 });
+            const glowGeo = new THREE.SphereGeometry(0.2, 8, 8);
+            const glowMat = new THREE.MeshBasicMaterial({ color: 0xff69b4, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending });
             const glow = new THREE.Mesh(glowGeo, glowMat);
             glow.position.y = 0.1;
             lotusGroup.add(glow);
@@ -118,7 +157,7 @@ export class FlowersManager {
 
             this.flowers.push({
                 group: lotusGroup,
-                targetScale: 0.8 + Math.random() * 0.4,
+                targetScale: 1.0 + Math.random() * 0.4,
                 currentScale: 0.0,
                 isLotus: true,
                 baseY: 1.1,

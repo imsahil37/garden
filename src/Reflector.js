@@ -11,7 +11,9 @@ import {
 	WebGLRenderTarget,
 	HalfFloatType,
 	NoToneMapping,
-	LinearFilter
+	LinearFilter,
+    RepeatWrapping,
+    Texture
 } from 'three';
 
 class Reflector extends Mesh {
@@ -33,6 +35,9 @@ class Reflector extends Mesh {
 		const clipBias = options.clipBias || 0;
 		const shader = options.shader || Reflector.ReflectorShader;
 		const multisample = ( options.multisample !== undefined ) ? options.multisample : 4;
+
+        // Custom: Distortion Map
+        const distortionMap = options.distortionMap || null;
 
 		//
 
@@ -63,6 +68,10 @@ class Reflector extends Mesh {
 		material.uniforms[ 'tDiffuse' ].value = renderTarget.texture;
 		material.uniforms[ 'color' ].value = color;
 		material.uniforms[ 'textureMatrix' ].value = textureMatrix;
+        if ( distortionMap ) {
+            material.uniforms[ 'tDudv' ].value = distortionMap;
+            material.defines = { USE_DISTORTION: "" };
+        }
 
 		this.material = material;
 
@@ -210,13 +219,26 @@ Reflector.ReflectorShader = {
 		},
 		'textureMatrix': {
 			value: null
-		}
+		},
+        'tDudv': {
+            value: null
+        },
+        'uTime': {
+            value: 0
+        },
+        'uWaveStrength': {
+            value: 0.1 // Strength of distortion
+        },
+        'uWaveSpeed': {
+            value: 0.1
+        }
 
 	},
 
 	vertexShader: /* glsl */`
 		uniform mat4 textureMatrix;
 		varying vec4 vUv;
+        varying vec2 vDudvUv; // UV for distortion map
 
 		#include <common>
 		#include <logdepthbuf_pars_vertex>
@@ -224,6 +246,7 @@ Reflector.ReflectorShader = {
 		void main() {
 
 			vUv = textureMatrix * vec4( position, 1.0 );
+            vDudvUv = uv * 3.0; // Tile the distortion map
 
 			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
@@ -234,6 +257,15 @@ Reflector.ReflectorShader = {
 	fragmentShader: /* glsl */`
 		uniform vec3 color;
 		uniform sampler2D tDiffuse;
+        uniform float uTime;
+
+        #ifdef USE_DISTORTION
+            uniform sampler2D tDudv;
+            uniform float uWaveStrength;
+            uniform float uWaveSpeed;
+            varying vec2 vDudvUv;
+        #endif
+
 		varying vec4 vUv;
 
 		#include <logdepthbuf_pars_fragment>
@@ -254,7 +286,17 @@ Reflector.ReflectorShader = {
 
 			#include <logdepthbuf_fragment>
 
-			vec4 base = texture2DProj( tDiffuse, vUv );
+            vec4 reflectionUv = vUv;
+
+            #ifdef USE_DISTORTION
+                // Simple wave distortion
+                vec2 distortedUv = texture2D( tDudv, vDudvUv + vec2(uTime * uWaveSpeed, 0.0) ).rg;
+                distortedUv = (distortedUv * 2.0 - 1.0) * uWaveStrength;
+
+                reflectionUv.xy += distortedUv;
+            #endif
+
+			vec4 base = texture2DProj( tDiffuse, reflectionUv );
 			gl_FragColor = vec4( blendOverlay( base.rgb, color ), 1.0 );
 
             // Add some glassiness/opacity

@@ -23,6 +23,12 @@ export class Island {
         groundTexture.wrapT = THREE.RepeatWrapping;
         groundTexture.repeat.set(4, 4);
 
+        // Water Distortion Map
+        const waterNormals = new THREE.CanvasTexture(createNoiseTexture()); // Reuse noise for now, works for dudv
+        waterNormals.wrapS = THREE.RepeatWrapping;
+        waterNormals.wrapT = THREE.RepeatWrapping;
+        waterNormals.repeat.set(4, 4);
+
         // 1. Grass Top (Initially Dry/Brown)
         const grassGeometry = new THREE.CylinderGeometry(topRadius, topRadius, thickness, 64);
 
@@ -63,7 +69,8 @@ export class Island {
             textureWidth: 1024,
             textureHeight: 1024,
             color: 0x88ccff,
-            multisample: 2
+            multisample: 2,
+            distortionMap: waterNormals
         });
 
         this.pond.rotation.x = -Math.PI / 2;
@@ -195,6 +202,11 @@ export class Island {
 
         // Update uniforms
         if (this.grassUniforms) this.grassUniforms.uTime.value = time * 0.001;
+
+        // Update Reflector
+        if (this.pond && this.pond.material.uniforms.uTime) {
+            this.pond.material.uniforms.uTime.value = time * 0.001;
+        }
 
         // Transition Colors based on progress (Cubic curve for delayed greening)
         const rawProgress = Math.min(state.memoriesCollected / state.totalMemories, 1.0);
