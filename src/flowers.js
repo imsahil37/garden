@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { state } from './state.js';
+import { createGlowTexture } from './utils.js';
 
 export class FlowersManager {
     constructor(scene) {
@@ -17,6 +18,9 @@ export class FlowersManager {
             0xddaaff, // Purple
             0xffccaa  // Orange
         ];
+
+        // Cache texture
+        this.glowTexture = new THREE.CanvasTexture(createGlowTexture());
     }
 
     spawnFlower(position, index) {
@@ -88,18 +92,18 @@ export class FlowersManager {
         center.position.y = 0.05; // Relative to petalGroup
         petalGroup.add(center);
 
-        // --- Ambient Glow ---
-        const glowGeo = new THREE.SphereGeometry(0.6, 16, 16);
-        const glowMat = new THREE.MeshBasicMaterial({
+        // --- Ambient Glow (Sprite) ---
+        const glowMat = new THREE.SpriteMaterial({
+            map: this.glowTexture,
             color: color,
             transparent: true,
-            opacity: 0.3,
+            opacity: 0.7, // Start visible
             blending: THREE.AdditiveBlending,
-            depthWrite: false,
-            side: THREE.BackSide
+            depthWrite: false
         });
-        const glow = new THREE.Mesh(glowGeo, glowMat);
+        const glow = new THREE.Sprite(glowMat);
         glow.position.y = 0.6;
+        glow.scale.setScalar(2.0); // Large soft glow
         flowerGroup.add(glow);
 
         this.group.add(flowerGroup);
@@ -107,7 +111,8 @@ export class FlowersManager {
         this.flowers.push({
             group: flowerGroup,
             targetScale: 1.8, // Bigger scale as requested
-            currentScale: 0.0
+            currentScale: 0.0,
+            glow: glow
         });
 
         state.emit('flowerBloom');
@@ -146,11 +151,17 @@ export class FlowersManager {
                 lotusGroup.add(petal);
             }
 
-            // Add a glowing center mesh instead
-            const glowGeo = new THREE.SphereGeometry(0.2, 8, 8);
-            const glowMat = new THREE.MeshBasicMaterial({ color: 0xff69b4, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending });
-            const glow = new THREE.Mesh(glowGeo, glowMat);
-            glow.position.y = 0.1;
+            // Sprite Glow
+            const glowMat = new THREE.SpriteMaterial({
+                map: this.glowTexture,
+                color: 0xff69b4,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending
+            });
+            const glow = new THREE.Sprite(glowMat);
+            glow.position.y = 0.2;
+            glow.scale.setScalar(1.5);
             lotusGroup.add(glow);
 
             this.group.add(lotusGroup);
@@ -187,6 +198,11 @@ export class FlowersManager {
             if (flower.isLotus) {
                 // Bobbing on water
                 flower.group.position.y = flower.baseY + Math.sin(time * 0.002 + flower.offset) * 0.05;
+            }
+
+            // Pulse glow
+            if (flower.glow) {
+                 flower.glow.material.opacity = 0.6 + Math.sin(time * 0.003 + flower.group.position.x) * 0.2;
             }
         });
     }
