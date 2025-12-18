@@ -127,20 +127,20 @@ export class OrbsManager {
         orbData.hitMesh.userData.isInteractable = false;
 
         // Burst Effect
-        this.createBurst(orbGroup, orbData.main.material.color);
+        this.createBurst(orbGroup, orbData.main.material.color, index);
 
         // Hide original orb visuals immediately
         orbData.main.visible = false;
         orbData.glow.visible = false;
 
         // Create Lantern (after short delay or immediately? Let's do immediately but start small)
-        this.createLantern(orbGroup, orbData.main.material.color);
+        this.createLantern(orbGroup, orbData.main.material.color, index);
 
         // Set flag to fly away
         orbData.flying = true;
     }
 
-    createBurst(orbGroup, color) {
+    createBurst(orbGroup, color, index) {
         const particleCount = 20;
         const geometry = new THREE.BufferGeometry();
         const positions = [];
@@ -167,10 +167,10 @@ export class OrbsManager {
         orbGroup.add(points);
 
         // Store for animation
-        this.orbs[orbGroup.userData.index || 0].burst = { points, velocities, life: 1.0 };
+        this.orbs[index].burst = { points, velocities, life: 1.0 };
     }
 
-    createLantern(orbGroup, color) {
+    createLantern(orbGroup, color, index) {
         // Aesthetic lantern: Rectangular/Asian style or Cylinder
         const lanternGroup = new THREE.Group();
         lanternGroup.position.y = 0.0;
@@ -212,7 +212,7 @@ export class OrbsManager {
         lanternGroup.add(light);
 
         orbGroup.add(lanternGroup);
-        this.orbs[orbGroup.userData.index || 0].lantern = lanternGroup;
+        this.orbs[index].lantern = lanternGroup;
     }
 
     update(time) {
