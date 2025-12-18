@@ -43,10 +43,12 @@ export class ConstellationManager {
         // y = 13 cos t - 5 cos 2t - 2 cos 3t - cos 4t
 
         const points = [];
-        for(let t = 0; t < Math.PI * 2; t += 0.2) {
+        // Increase resolution slightly and scale up
+        for(let t = 0; t < Math.PI * 2; t += 0.15) {
              const x = 16 * Math.pow(Math.sin(t), 3);
              const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-             points.push(new THREE.Vector3(x * 0.2, y * 0.2, 0));
+             // Scale up significantly (0.2 -> 0.35)
+             points.push(new THREE.Vector3(x * 0.35, y * 0.35, 0));
         }
 
         points.forEach((pos, i) => {
@@ -60,15 +62,29 @@ export class ConstellationManager {
         // Close loop
         this.createLine(points[points.length-1], points[0]);
 
-        this.group.position.set(0, 15, -10);
-        this.group.lookAt(0, 0, 0);
+        // Improve position: closer to camera, facing camera
+        // Camera is at (0, 5, 15).
+        // Place constellation at (0, 8, 5) -> 10 units away
+        this.group.position.set(0, 9, 0);
+        // We want it to face the camera.
+        // The shape is on XY plane. Camera is at (0, 5, 15).
+        // Ideally lookAt camera.
+        this.group.lookAt(0, 5, 15);
     }
 
     createStar(pos) {
-        const starGeo = new THREE.SphereGeometry(0.15, 8, 8);
+        // Larger stars with glow
+        const starGeo = new THREE.SphereGeometry(0.25, 8, 8);
         const starMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
         const star = new THREE.Mesh(starGeo, starMat);
         star.position.copy(pos);
+
+        // Add glow halo
+        const glowGeo = new THREE.SphereGeometry(0.5, 8, 8);
+        const glowMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2, side: THREE.BackSide });
+        const glow = new THREE.Mesh(glowGeo, glowMat);
+        star.add(glow);
+
         this.group.add(star);
         this.stars.push(star);
     }

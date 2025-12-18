@@ -102,10 +102,17 @@ export class FlowersManager {
                 lotusGroup.add(petal);
             }
 
-            // Center Light
-            const light = new THREE.PointLight(0xff69b4, 1, 2);
-            light.position.y = 0.2;
-            lotusGroup.add(light);
+            // Center Light (Removed for performance, using high emissive instead)
+            // const light = new THREE.PointLight(0xff69b4, 1, 2);
+            // light.position.y = 0.2;
+            // lotusGroup.add(light);
+
+            // Add a glowing center mesh instead
+            const glowGeo = new THREE.SphereGeometry(0.15, 8, 8);
+            const glowMat = new THREE.MeshBasicMaterial({ color: 0xff69b4, transparent: true, opacity: 0.8 });
+            const glow = new THREE.Mesh(glowGeo, glowMat);
+            glow.position.y = 0.1;
+            lotusGroup.add(glow);
 
             this.group.add(lotusGroup);
 
