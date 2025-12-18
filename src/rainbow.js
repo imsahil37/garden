@@ -19,14 +19,15 @@ export class RainbowManager {
         const segmentCount = 7;
 
         // Define rainbow colors
+        // Brighter Colors for Glow Effect
         const colors = [
-             new THREE.Color(0xff0000), // Red
-             new THREE.Color(0xff7f00), // Orange
-             new THREE.Color(0xffff00), // Yellow
-             new THREE.Color(0x00ff00), // Green
-             new THREE.Color(0x0000ff), // Blue
-             new THREE.Color(0x4b0082), // Indigo
-             new THREE.Color(0x9400d3)  // Violet
+             new THREE.Color(0xff3333).multiplyScalar(1.5), // Red
+             new THREE.Color(0xffaa33).multiplyScalar(1.5), // Orange
+             new THREE.Color(0xffff33).multiplyScalar(1.5), // Yellow
+             new THREE.Color(0x33ff33).multiplyScalar(1.5), // Green
+             new THREE.Color(0x3333ff).multiplyScalar(1.5), // Blue
+             new THREE.Color(0x8a2be2).multiplyScalar(1.5), // Indigo
+             new THREE.Color(0xee82ee).multiplyScalar(1.5)  // Violet
         ];
 
         // Custom Shader for Glassy/Glowy effect
@@ -60,19 +61,16 @@ export class RainbowManager {
                 vec3 normal = normalize(vNormal);
                 float fresnel = dot(viewDir, normal);
                 fresnel = clamp(1.0 - abs(fresnel), 0.0, 1.0);
-                fresnel = pow(fresnel, 2.0); // Edge glow
+                fresnel = pow(fresnel, 1.5); // Edge glow (Softened power for wider glow)
 
-                // Base color
+                // Base color boosted
                 vec3 color = uColor;
 
-                // Add inner glow (inverse fresnel)
-                float innerGlow = 1.0 - fresnel;
-
                 // Final alpha combines base opacity with fresnel edge enhancement
-                float alpha = uOpacity * (0.3 + fresnel * 0.7);
+                float alpha = uOpacity * (0.4 + fresnel * 0.8);
 
                 // Additive glow boost
-                vec3 finalColor = color + (color * fresnel * 2.0);
+                vec3 finalColor = color + (color * fresnel * 3.0);
 
                 gl_FragColor = vec4(finalColor, alpha);
             }

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { state } from './state.js';
-import { createNoiseTexture, WATER_VERTEX_SHADER, WATER_FRAGMENT_SHADER } from './utils.js';
+import { createNoiseTexture } from './utils.js';
+import { Reflector } from './Reflector.js';
 
 export class Island {
     constructor(scene) {
@@ -53,38 +54,20 @@ export class Island {
         this.modifyGeometry(this.earth.geometry, 0.5);
         this.group.add(this.earth);
 
-        // 3. Pond (Shader Material for GPU waves)
-        const pondRadius = 2;
-        const pondGeometry = new THREE.PlaneGeometry(pondRadius * 2, pondRadius * 2, 64, 64);
+        // 3. Pond (Reflector for Glassy Water)
+        const pondRadius = 2.5; // Increased size to remove gaps
+        const pondGeometry = new THREE.CircleGeometry(pondRadius, 64);
 
-        this.pondUniforms = {
-            uTime: { value: 0 },
-            uColor: { value: new THREE.Color(0x88ccff) },     // Lighter shallow color
-            uDeepColor: { value: new THREE.Color(0x2a5ca8) }  // Darker deep color
-        };
-
-        const pondMaterial = new THREE.ShaderMaterial({
-            vertexShader: WATER_VERTEX_SHADER,
-            fragmentShader: WATER_FRAGMENT_SHADER,
-            uniforms: this.pondUniforms,
-            transparent: true,
-            side: THREE.DoubleSide
+        this.pond = new Reflector(pondGeometry, {
+            clipBias: 0.003,
+            textureWidth: 1024,
+            textureHeight: 1024,
+            color: 0x88ccff,
+            multisample: 2
         });
 
-        this.pond = new THREE.Mesh(pondGeometry, pondMaterial);
         this.pond.rotation.x = -Math.PI / 2;
-        this.pond.position.set(2, thickness + 0.1, 1);
-
-        // Mask the square plane to a circle using a stencil or just simple distance check in shader?
-        // Or just use CircleGeometry with high segments.
-        // Let's use CircleGeometry but we need enough internal vertices for waves.
-        // CircleGeometry topology is a fan, which isn't great for waves in center.
-        // PlaneGeometry is better grid, but square.
-        // Let's stick to Plane and assume the edges are hidden by rocks/ground or use a discard in fragment.
-        // For simplicity and to match previous Circle look, let's use a Ring mask or just rocks.
-        // Wait, standard CircleGeometry (fan) is okay if segments are high enough on the rim, but center is just one point.
-        // Improved: Cylinder with 1 height segment? No.
-        // Let's use Plane and hide edges with rocks.
+        this.pond.position.set(2, thickness + 0.05, 1); // Slight lower to fit terrain
 
         this.group.add(this.pond);
 
@@ -211,11 +194,11 @@ export class Island {
         this.group.position.y = Math.sin(time * 0.0005) * 0.2;
 
         // Update uniforms
-        if (this.pondUniforms) this.pondUniforms.uTime.value = time * 0.001;
         if (this.grassUniforms) this.grassUniforms.uTime.value = time * 0.001;
 
-        // Transition Colors based on progress
-        const progress = Math.min(state.memoriesCollected / state.totalMemories, 1.0);
+        // Transition Colors based on progress (Cubic curve for delayed greening)
+        const rawProgress = Math.min(state.memoriesCollected / state.totalMemories, 1.0);
+        const progress = Math.pow(rawProgress, 3); // Stays brown longer
 
         // Dry Brown (8B4513) to Lush Green (7EC850)
         const startColor = new THREE.Color(0x8B4513);

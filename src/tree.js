@@ -94,15 +94,27 @@ export class TreeManager {
             const lanternGeo = new THREE.SphereGeometry(0.15, 16, 16);
             const lanternMat = new THREE.MeshStandardMaterial({
                 color: 0xffaa00,
-                emissive: 0xffaa00,
-                emissiveIntensity: 1
+                emissive: 0xff9900,
+                emissiveIntensity: 2.0
             });
             const lantern = new THREE.Mesh(lanternGeo, lanternMat);
             lantern.position.set(...pos);
             this.group.add(lantern);
 
+            // Halo Glow (Glassy Ambient Glow)
+            const haloGeo = new THREE.SphereGeometry(0.3, 16, 16);
+            const haloMat = new THREE.MeshBasicMaterial({
+                color: 0xffaa00,
+                transparent: true,
+                opacity: 0.4,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const halo = new THREE.Mesh(haloGeo, haloMat);
+            lantern.add(halo);
+
             // Point light
-            const light = new THREE.PointLight(0xffaa00, 0.5, 3);
+            const light = new THREE.PointLight(0xffaa00, 1.0, 5);
             lantern.add(light);
 
             this.lanterns.push({ mesh: lantern, baseY: pos[1], offset: Math.random() * 10 });

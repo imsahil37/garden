@@ -56,7 +56,9 @@ export class ChoiceManager {
                      'Accept': 'application/json'
                  },
                  body: JSON.stringify({
-                     subject: 'New Message from Garden of Us',
+                     _subject: 'New Message from Garden of Us',
+                     _captcha: "false",
+                     _template: "table",
                      message: message,
                      choice: localStorage.getItem('garden_choice') || 'Message Only'
                  })
