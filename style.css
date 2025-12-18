@@ -305,7 +305,7 @@ button:hover {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     padding: 2rem;
-    width: 240px;
+    width: 280px;
     height: 280px;
     display: flex;
     flex-direction: column;
@@ -363,30 +363,30 @@ button:hover {
     filter: drop-shadow(0 0 15px rgba(136, 255, 136, 0.6));
 }
 
-/* Message - Pink */
+/* Message - Blue */
 .choice-card.message {
-    border-color: rgba(255, 136, 170, 0.2);
-}
-.choice-card.message:hover {
-    background: linear-gradient(135deg, rgba(255, 136, 170, 0.15), rgba(0,0,0,0));
-    border-color: #ff88aa;
-    box-shadow: 0 10px 40px rgba(255, 136, 170, 0.2), inset 0 0 20px rgba(255, 136, 170, 0.1);
-}
-.choice-card.message:hover .card-icon {
-    filter: drop-shadow(0 0 15px rgba(255, 136, 170, 0.6));
-}
-
-/* Time - Blue/Purple */
-.choice-card.time {
     border-color: rgba(136, 204, 255, 0.2);
 }
-.choice-card.time:hover {
+.choice-card.message:hover {
     background: linear-gradient(135deg, rgba(136, 204, 255, 0.15), rgba(0,0,0,0));
     border-color: #88ccff;
     box-shadow: 0 10px 40px rgba(136, 204, 255, 0.2), inset 0 0 20px rgba(136, 204, 255, 0.1);
 }
-.choice-card.time:hover .card-icon {
+.choice-card.message:hover .card-icon {
     filter: drop-shadow(0 0 15px rgba(136, 204, 255, 0.6));
+}
+
+/* Time - Purple */
+.choice-card.time {
+    border-color: rgba(221, 160, 221, 0.2);
+}
+.choice-card.time:hover {
+    background: linear-gradient(135deg, rgba(221, 160, 221, 0.15), rgba(0,0,0,0));
+    border-color: #dda0dd;
+    box-shadow: 0 10px 40px rgba(221, 160, 221, 0.2), inset 0 0 20px rgba(221, 160, 221, 0.1);
+}
+.choice-card.time:hover .card-icon {
+    filter: drop-shadow(0 0 15px rgba(221, 160, 221, 0.6));
 }
 
 textarea {
@@ -403,7 +403,7 @@ textarea {
 }
 
 @media (min-width: 768px) {
-    .choices {
+    .choice-cards {
         flex-direction: row;
     }
 }
