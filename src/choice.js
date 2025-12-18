@@ -25,9 +25,10 @@ export class ChoiceManager {
             }
         });
 
-        document.querySelectorAll('.choice-btn').forEach(btn => {
+        document.querySelectorAll('.choice-card').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const choice = e.target.dataset.choice;
+                const target = e.target.closest('.choice-card');
+                const choice = target.dataset.choice;
                 this.handleChoice(choice);
             });
         });

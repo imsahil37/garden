@@ -73,12 +73,25 @@
 
         <!-- Choice View -->
         <div id="choice-view" class="screen hidden">
-            <div class="content glass">
-                <h2>What comes next?</h2>
-                <div class="choices">
-                    <button class="choice-btn" data-choice="forgive">💚 I forgive you</button>
-                    <button class="choice-btn" data-choice="message">💌 Leave a message</button>
-                    <button class="choice-btn" data-choice="time">🚶 I need time</button>
+            <div class="content" style="max-width: 900px; background: none; box-shadow: none;">
+                <h2 style="font-size: 3rem; margin-bottom: 0.5rem; text-shadow: 0 0 20px rgba(255,255,255,0.3);">What would you like to do?</h2>
+                <p style="margin-bottom: 3rem; font-size: 1.2rem; color: var(--text-secondary);">There's no wrong answer. This is your choice.</p>
+                <div class="choice-cards">
+                    <button class="choice-card forgive" data-choice="forgive">
+                        <div class="card-icon">💚</div>
+                        <h3>I forgive you</h3>
+                        <p>Let's grow together</p>
+                    </button>
+                    <button class="choice-card message" data-choice="message">
+                        <div class="card-icon">💌</div>
+                        <h3>Leave a message</h3>
+                        <p>I have something to say</p>
+                    </button>
+                    <button class="choice-card time" data-choice="time">
+                        <div class="card-icon">🚶</div>
+                        <h3>I need time</h3>
+                        <p>And that's okay</p>
+                    </button>
                 </div>
             </div>
         </div>
