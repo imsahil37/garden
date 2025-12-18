@@ -14,23 +14,87 @@ export class RainbowManager {
     }
 
     init() {
-        // 7 TorusGeometry arcs (ROYGBIV)
-        // colors: [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3]
-        const colors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
-
         const radius = 20;
         const tube = 0.5;
+        const segmentCount = 7;
+
+        // Define rainbow colors
+        const colors = [
+             new THREE.Color(0xff0000), // Red
+             new THREE.Color(0xff7f00), // Orange
+             new THREE.Color(0xffff00), // Yellow
+             new THREE.Color(0x00ff00), // Green
+             new THREE.Color(0x0000ff), // Blue
+             new THREE.Color(0x4b0082), // Indigo
+             new THREE.Color(0x9400d3)  // Violet
+        ];
+
+        // Custom Shader for Glassy/Glowy effect
+        const rainbowVertexShader = `
+            varying vec2 vUv;
+            varying vec3 vViewPosition;
+            varying vec3 vNormal;
+
+            void main() {
+                vUv = uv;
+                vec3 pos = position;
+                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                gl_Position = projectionMatrix * mvPosition;
+
+                vViewPosition = -mvPosition.xyz;
+                vNormal = normalMatrix * normal;
+            }
+        `;
+
+        const rainbowFragmentShader = `
+            uniform vec3 uColor;
+            uniform float uOpacity;
+
+            varying vec2 vUv;
+            varying vec3 vViewPosition;
+            varying vec3 vNormal;
+
+            void main() {
+                // Fresnel
+                vec3 viewDir = normalize(vViewPosition);
+                vec3 normal = normalize(vNormal);
+                float fresnel = dot(viewDir, normal);
+                fresnel = clamp(1.0 - abs(fresnel), 0.0, 1.0);
+                fresnel = pow(fresnel, 2.0); // Edge glow
+
+                // Base color
+                vec3 color = uColor;
+
+                // Add inner glow (inverse fresnel)
+                float innerGlow = 1.0 - fresnel;
+
+                // Final alpha combines base opacity with fresnel edge enhancement
+                float alpha = uOpacity * (0.3 + fresnel * 0.7);
+
+                // Additive glow boost
+                vec3 finalColor = color + (color * fresnel * 2.0);
+
+                gl_FragColor = vec4(finalColor, alpha);
+            }
+        `;
 
         colors.forEach((color, i) => {
             const geo = new THREE.TorusGeometry(radius + i * tube * 0.8, tube, 16, 100, Math.PI);
-            const mat = new THREE.MeshBasicMaterial({
-                color: color,
+
+            const mat = new THREE.ShaderMaterial({
+                vertexShader: rainbowVertexShader,
+                fragmentShader: rainbowFragmentShader,
+                uniforms: {
+                    uColor: { value: color },
+                    uOpacity: { value: 0.0 }
+                },
                 transparent: true,
-                opacity: 0, // Start invisible
-                side: THREE.DoubleSide
+                side: THREE.DoubleSide,
+                blending: THREE.AdditiveBlending, // Glow effect
+                depthWrite: false
             });
+
             const mesh = new THREE.Mesh(geo, mat);
-            // Rotate to stand up
             mesh.position.z = -10;
             this.group.add(mesh);
         });
@@ -42,17 +106,21 @@ export class RainbowManager {
         if (state.currentAct >= 3) {
             if (!this.group.visible) this.group.visible = true;
 
-            // Fade in & Animate
             this.group.children.forEach((mesh, i) => {
+                const uniforms = mesh.material.uniforms;
+
                 // Fade in
-                if (mesh.material.opacity < 0.3) {
-                    mesh.material.opacity += 0.001;
+                if (uniforms.uOpacity.value < 0.3) {
+                    uniforms.uOpacity.value += 0.001;
                 }
 
-                // Animation: Pulse opacity slightly
-                mesh.material.opacity = 0.3 + Math.sin(time * 0.002 + i * 0.5) * 0.05;
+                // Pulse
+                const pulse = 0.3 + Math.sin(time * 0.002 + i * 0.5) * 0.05;
+                if (uniforms.uOpacity.value >= 0.3) {
+                     uniforms.uOpacity.value = pulse;
+                }
 
-                // Slight rotation wiggle
+                // Wiggle
                 mesh.rotation.z = Math.sin(time * 0.0005 + i * 0.1) * 0.02;
             });
         }

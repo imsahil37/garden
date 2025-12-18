@@ -59,7 +59,8 @@ export class Island {
 
         this.pondUniforms = {
             uTime: { value: 0 },
-            uColor: { value: new THREE.Color(0x4a90d9) }
+            uColor: { value: new THREE.Color(0x88ccff) },     // Lighter shallow color
+            uDeepColor: { value: new THREE.Color(0x2a5ca8) }  // Darker deep color
         };
 
         const pondMaterial = new THREE.ShaderMaterial({

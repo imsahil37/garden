@@ -39,10 +39,42 @@ export class ChoiceManager {
 
         this.sendMessageBtn.addEventListener('click', () => {
              const message = this.messageText.value;
-             // Save/Send message
+             if (!message.trim()) return;
+
+             // Disable button and show sending state
+             this.sendMessageBtn.disabled = true;
+             this.sendMessageBtn.textContent = 'Sending...';
+
+             // Save locally
              localStorage.setItem('garden_message', message);
-             this.showFinalMessage("Message Sent", "Thank you for your words.");
-             this.messageInputView.classList.add('hidden');
+
+             // Send via FormSubmit to sahil.iitg26@gmail.com
+             fetch('https://formsubmit.co/ajax/sahil.iitg26@gmail.com', {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json',
+                     'Accept': 'application/json'
+                 },
+                 body: JSON.stringify({
+                     subject: 'New Message from Garden of Us',
+                     message: message,
+                     choice: localStorage.getItem('garden_choice') || 'Message Only'
+                 })
+             })
+             .then(response => {
+                 this.showFinalMessage("Message Sent", "Thank you for your words.");
+                 this.messageInputView.classList.add('hidden');
+             })
+             .catch(error => {
+                 console.error('Error sending message:', error);
+                 // Fallback UI even if network fails
+                 this.showFinalMessage("Message Saved", "Thank you. Your message is safe.");
+                 this.messageInputView.classList.add('hidden');
+             })
+             .finally(() => {
+                 this.sendMessageBtn.disabled = false;
+                 this.sendMessageBtn.textContent = 'Send Message';
+             });
         });
 
         if (this.exploreBtn) {

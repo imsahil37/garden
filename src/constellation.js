@@ -47,8 +47,8 @@ export class ConstellationManager {
         for(let t = 0; t < Math.PI * 2; t += 0.15) {
              const x = 16 * Math.pow(Math.sin(t), 3);
              const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-             // Scale up significantly (0.2 -> 0.35)
-             points.push(new THREE.Vector3(x * 0.35, y * 0.35, 0));
+             // Reduced scale from 0.35 to 0.2 as requested
+             points.push(new THREE.Vector3(x * 0.2, y * 0.2, 0));
         }
 
         points.forEach((pos, i) => {
