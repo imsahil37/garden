@@ -1,56 +1,55 @@
 export const config = {
   // Recipient Info
   recipient: {
-    name: "pglu",           // Name for constellation
-    nickname: "buddhu"      // Used in letter signature
+    name: "HerName",           // Update this to her actual name if you wish
+    nickname: "My Love"        // Used in letter signature
   },
 
-  // Memories (in order of appearance)
+  // Memories (Updated for the "Placement/Distance" context)
   memories: [
     {
-      title: "How We Met",
-      text: "That day changed everything... The way the light hit your face, I knew something special was beginning.",
+      title: "The Beginning",
+      text: "Remember those long nights we used to talk? That was when I realized I didn't just like you, I needed you.",
     },
     {
-      title: "Our First Adventure",
-      text: "Remember when we got lost... but it didn't matter because we were together. We found that hidden cafe instead."
+      title: "The Distance",
+      text: "Then the world got loud. Placements, exams, pressure. I got lost in the noise and I stopped listening to the most important voice—yours."
     },
     {
-      title: "The Little Things",
-      text: "Your laugh. The way you look when you're concentrating. The coffee you make in the mornings."
+      title: " The Silence",
+      text: "I know I felt far away this last month. I know it felt like I ghosted you. It was the biggest mistake I've made."
     },
     {
-      title: "When I Messed Up",
-      text: "I hurt you. There's no excuse... I wasn't listening when I should have been. I am truly sorry."
+      title: "The Fear",
+      text: "When I saw you again, I was scared. Scared to hold your hand, scared to hug you. But seeing you reminded me of everything I was missing."
     },
     {
-      title: "What You Mean To Me",
-      text: "You're not just someone I love... you are my best friend, my confidant, and my home."
+      title: "The Realization",
+      text: "A career is nothing if I don't have my person to share it with. You are my person."
     },
     {
       title: "My Promise",
-      text: "I promise to listen more... to be present, to be patient, and to cherish every moment we have."
+      text: "I'm back now. No more long silences. No more distance. Just us, growing together again."
     }
   ],
 
-  // Love Letter
+  // Love Letter - The Climax
   letter: {
-    content: `My dearest,
+    content: `My Dearest,
 
-I've been sitting here, trying to find the right words...
+I've been struggling to find the right words to say this in person, so I built this garden for you instead.
 
-I know things have been difficult lately, and I take responsibility for my part in that. This garden is a representation of my journey—from realizing my mistakes to understanding how much you mean to me.
+I know I hurt you. I know the last month was cold and confusing. I got so focused on securing my future that I neglected my present—which is you.
 
-Every flower here represents a memory I cherish. Every light represents the hope I have for us.
+When I tried to reach for you yesterday and you pulled away, it broke my heart, but I understood it. I earned that distance. But I want to earn back your closeness.
 
-I want to grow with you, just like this garden. I want to weather the storms and bloom in the sun, together.
+This garden represents us. It might have been neglected for a little while, but the roots are deep, and with a little light, it will bloom again.
 
-Always and completely,
-Me`,
-    signature: "— buddhu ❤️"
+Let me hold your hand again?`,
+    signature: "— Your stupid boyfriend ❤️"
   },
 
-  // Visual Customization
+  // Visual Customization (Kept original settings)
   theme: {
     accentColor: 0x88ccff,
     skyColorStart: 0x0a0a15,
