@@ -198,6 +198,16 @@ button:hover {
     text-align: right;
     margin-top: 2rem;
     font-weight: bold;
+    margin-bottom: 3rem; /* Make space for button */
+}
+
+#close-letter-btn {
+    display: block;
+    margin: 2rem auto 0;
+    position: relative;
+    z-index: 10;
+    color: #2c2c2c; /* Dark text for contrast against white paper */
+    border-color: #2c2c2c;
 }
 
 /* Overlay */

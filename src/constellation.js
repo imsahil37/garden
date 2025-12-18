@@ -94,10 +94,20 @@ export class ConstellationManager {
         }
 
         if (this.group.visible) {
-            // Twinkle
+            // Twinkle & Float
             this.stars.forEach((star, i) => {
                 const scale = 1 + Math.sin(time * 0.005 + i) * 0.3;
                 star.scale.setScalar(scale);
+
+                // Floating offset
+                star.position.z = Math.sin(time * 0.001 + i) * 0.1;
+            });
+
+            // Pulse lines
+            this.group.children.forEach(child => {
+                if (child.isLine) {
+                    child.material.opacity = 0.3 + Math.sin(time * 0.003) * 0.2;
+                }
             });
         }
     }

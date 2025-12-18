@@ -46,10 +46,9 @@ export class LetterManager {
         this.letterSignature.textContent = '';
         this.closeBtn.classList.add('hidden');
 
-        // Speed up typing: 10-30ms instead of 30-80ms
         for (let i = 0; i < content.length; i++) {
             this.letterContent.textContent += content[i];
-            if (i % 3 === 0) state.emit('typeChar'); // Emit sound less frequently
+            state.emit('typeChar');
 
             // Allow skipping by clicking
             if (this.skipTyping) {
@@ -57,7 +56,8 @@ export class LetterManager {
                  break;
             }
 
-            await new Promise(r => setTimeout(r, 10 + Math.random() * 20));
+            // Original pacing
+            await new Promise(r => setTimeout(r, 30 + Math.random() * 50));
         }
 
         // Show signature

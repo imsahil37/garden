@@ -42,11 +42,18 @@ export class RainbowManager {
         if (state.currentAct >= 3) {
             if (!this.group.visible) this.group.visible = true;
 
-            // Fade in
+            // Fade in & Animate
             this.group.children.forEach((mesh, i) => {
+                // Fade in
                 if (mesh.material.opacity < 0.3) {
                     mesh.material.opacity += 0.001;
                 }
+
+                // Animation: Pulse opacity slightly
+                mesh.material.opacity = 0.3 + Math.sin(time * 0.002 + i * 0.5) * 0.05;
+
+                // Slight rotation wiggle
+                mesh.rotation.z = Math.sin(time * 0.0005 + i * 0.1) * 0.02;
             });
         }
     }

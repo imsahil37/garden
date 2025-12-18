@@ -126,43 +126,50 @@ export class OrbsManager {
         orbData.collected = true;
         orbData.hitMesh.userData.isInteractable = false;
 
-        // Create Parachute
-        this.createParachute(orbGroup, orbData.main.material.color);
+        // Create Lantern
+        this.createLantern(orbGroup, orbData.main.material.color);
 
         // Set flag to fly away
         orbData.flying = true;
     }
 
-    createParachute(orbGroup, color) {
-        const chuteGeo = new THREE.SphereGeometry(0.5, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-        const chuteMat = new THREE.MeshStandardMaterial({
+    createLantern(orbGroup, color) {
+        // Aesthetic lantern: Cylinder frame with paper glow
+        const lanternGroup = new THREE.Group();
+        lanternGroup.position.y = 0.5;
+
+        // Main paper body
+        const paperGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.6, 8);
+        const paperMat = new THREE.MeshStandardMaterial({
             color: color,
-            side: THREE.DoubleSide,
-            transparent: true,
-            opacity: 0.8,
             emissive: color,
-            emissiveIntensity: 0.5
+            emissiveIntensity: 1.0,
+            transparent: true,
+            opacity: 0.9,
+            side: THREE.DoubleSide
         });
-        const chute = new THREE.Mesh(chuteGeo, chuteMat);
-        chute.position.y = 0.5;
+        const paper = new THREE.Mesh(paperGeo, paperMat);
+        lanternGroup.add(paper);
 
-        // Strings
-        const linesGeo = new THREE.BufferGeometry();
-        const vertices = [];
-        const count = 8;
-        for(let i=0; i<count; i++) {
-            const angle = (i / count) * Math.PI * 2;
-            const x = Math.cos(angle) * 0.5;
-            const z = Math.sin(angle) * 0.5;
-            vertices.push(0, 0, 0); // Orb center
-            vertices.push(x, 0.5, z); // Chute rim
-        }
-        linesGeo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-        const linesMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
-        const lines = new THREE.LineSegments(linesGeo, linesMat);
+        // Top and bottom rims
+        const rimGeo = new THREE.TorusGeometry(0.3, 0.02, 8, 16);
+        const rimMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
 
-        orbGroup.add(chute);
-        orbGroup.add(lines);
+        const topRim = new THREE.Mesh(rimGeo, rimMat);
+        topRim.rotation.x = Math.PI / 2;
+        topRim.position.y = 0.3;
+        lanternGroup.add(topRim);
+
+        const bottomRim = new THREE.Mesh(rimGeo, rimMat);
+        bottomRim.rotation.x = Math.PI / 2;
+        bottomRim.position.y = -0.3;
+        lanternGroup.add(bottomRim);
+
+        // Point light inside
+        const light = new THREE.PointLight(color, 1, 5);
+        lanternGroup.add(light);
+
+        orbGroup.add(lanternGroup);
     }
 
     update(time) {
