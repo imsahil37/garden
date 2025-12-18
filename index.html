@@ -12,18 +12,41 @@
 <body>
     <div id="loading-screen" class="screen">
         <div class="content">
-            <h1 class="title">The Garden of Us</h1>
+            <div class="title-container">
+                <svg class="flower-icon left" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="25" r="20" fill="#ff88aa" />
+                    <circle cx="75" cy="40" r="20" fill="#ff88aa" />
+                    <circle cx="65" cy="75" r="20" fill="#ff88aa" />
+                    <circle cx="35" cy="75" r="20" fill="#ff88aa" />
+                    <circle cx="25" cy="40" r="20" fill="#ff88aa" />
+                    <circle cx="50" cy="50" r="15" fill="#ffdd88" />
+                </svg>
+                <h1 class="title">The Garden of Us</h1>
+                <svg class="flower-icon right" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="25" r="20" fill="#ff88aa" />
+                    <circle cx="75" cy="40" r="20" fill="#ff88aa" />
+                    <circle cx="65" cy="75" r="20" fill="#ff88aa" />
+                    <circle cx="35" cy="75" r="20" fill="#ff88aa" />
+                    <circle cx="25" cy="40" r="20" fill="#ff88aa" />
+                    <circle cx="50" cy="50" r="15" fill="#ffdd88" />
+                </svg>
+            </div>
+            <p class="subtitle">A journey through our memories</p>
             <div class="progress-bar">
                 <div class="progress-fill"></div>
             </div>
-            <p id="loading-text" class="fade-text">Planting seeds...</p>
+            <p id="loading-text" class="fade-text">Adding magic...</p>
             <button id="enter-btn" class="hidden">Enter the Garden</button>
         </div>
     </div>
 
     <div id="ui-container">
         <!-- Persistent UI -->
-        <button id="audio-toggle" class="icon-btn" aria-label="Toggle Audio">🔊</button>
+        <button id="audio-toggle" class="icon-btn" aria-label="Toggle Audio">
+            <svg class="audio-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+        </button>
 
         <!-- Memory Popup -->
         <div id="memory-popup" class="popup hidden">
@@ -77,6 +100,20 @@
                 <h2 id="final-title"></h2>
                 <p id="final-body"></p>
              </div>
+         </div>
+
+         <!-- Certificate View -->
+         <div id="certificate-view" class="popup hidden">
+            <div class="popup-content glass certificate-border">
+                <h2>Thank You</h2>
+                <p>For giving us a chance to grow.</p>
+                <div class="certificate-icon">
+                    <svg viewBox="0 0 100 100" style="width: 4rem; height: 4rem; display: block; margin: 0 auto;">
+                         <path d="M50 90 Q50 50 20 40 Q20 10 50 30 Q80 10 80 40 Q50 50 50 90" fill="#88ff88" stroke="#55aa55" stroke-width="2"/>
+                    </svg>
+                </div>
+                <button id="explore-btn">Explore the Garden</button>
+            </div>
          </div>
 
     </div>

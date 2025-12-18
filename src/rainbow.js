@@ -35,7 +35,7 @@ export class RainbowManager {
             this.group.add(mesh);
         });
 
-        this.group.position.set(0, -5, -20);
+        this.group.position.set(0, 0, -25);
     }
 
     update(time) {

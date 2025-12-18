@@ -83,28 +83,53 @@ button, .popup, .screen, .overlay {
     padding: 2rem;
 }
 
+.title-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.flower-icon {
+    width: 3rem;
+    height: 3rem;
+    filter: drop-shadow(0 0 10px rgba(255, 136, 170, 0.6));
+    animation: pulse 2s infinite ease-in-out;
+}
+
 .title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 500;
-    margin-bottom: 2rem;
-    letter-spacing: 2px;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.subtitle {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: var(--accent-cyan);
+    margin-bottom: 3rem;
+    font-size: 1.2rem;
+    opacity: 0.8;
 }
 
 .progress-bar {
-    width: 200px;
-    height: 2px;
-    background: var(--text-muted);
-    margin: 0 auto 1rem;
+    width: 300px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 auto 1.5rem;
     border-radius: 2px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background: var(--text-primary);
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
     width: 0%;
     transition: width 0.2s ease;
+    box-shadow: 0 0 10px var(--accent-pink);
 }
 
 .fade-text {
@@ -128,9 +153,29 @@ button {
 }
 
 button:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(90deg, rgba(136, 204, 255, 0.2), rgba(255, 136, 170, 0.2));
+    border-color: var(--accent-pink);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(255, 136, 170, 0.3);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+/* Certificate Styles */
+.certificate-border {
+    border: 2px solid var(--accent-gold);
+    box-shadow: 0 0 30px rgba(255, 221, 136, 0.2);
+    background: rgba(10, 10, 21, 0.9);
+}
+
+.certificate-icon {
+    font-size: 3rem;
+    margin: 1rem 0;
+    filter: drop-shadow(0 0 15px var(--accent-green));
 }
 
 /* Glass UI */

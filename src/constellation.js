@@ -62,13 +62,9 @@ export class ConstellationManager {
         // Close loop
         this.createLine(points[points.length-1], points[0]);
 
-        // Improve position: closer to camera, facing camera
+        // Improve position: Lower and further back so it's fully visible
         // Camera is at (0, 5, 15).
-        // Place constellation at (0, 8, 5) -> 10 units away
-        this.group.position.set(0, 9, 0);
-        // We want it to face the camera.
-        // The shape is on XY plane. Camera is at (0, 5, 15).
-        // Ideally lookAt camera.
+        this.group.position.set(0, 6, -5);
         this.group.lookAt(0, 5, 15);
     }
 

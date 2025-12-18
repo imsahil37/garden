@@ -5,6 +5,8 @@ export class ChoiceManager {
         this.choiceView = document.getElementById('choice-view');
         this.messageInputView = document.getElementById('message-input-view');
         this.finalMessageView = document.getElementById('final-message-view');
+        this.certificateView = document.getElementById('certificate-view');
+        this.exploreBtn = document.getElementById('explore-btn');
 
         this.messageText = document.getElementById('message-text');
         this.cancelMessageBtn = document.getElementById('cancel-message-btn');
@@ -42,6 +44,13 @@ export class ChoiceManager {
              this.showFinalMessage("Message Sent", "Thank you for your words.");
              this.messageInputView.classList.add('hidden');
         });
+
+        if (this.exploreBtn) {
+            this.exploreBtn.addEventListener('click', () => {
+                this.certificateView.classList.add('hidden');
+                // Optional: Enable free cam or just hide UI
+            });
+        }
     }
 
     showChoices() {
@@ -53,7 +62,7 @@ export class ChoiceManager {
         this.choiceView.classList.add('hidden');
 
         if (choice === 'forgive') {
-            this.showFinalMessage("Thank You", "Let's grow together. 💚");
+             this.certificateView.classList.remove('hidden');
              localStorage.setItem('garden_choice', 'forgive');
              // Celebration effects in scene?
         } else if (choice === 'message') {

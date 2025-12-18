@@ -91,7 +91,7 @@ export class FlowersManager {
                     color: petalColor,
                     side: THREE.DoubleSide,
                     emissive: petalColor,
-                    emissiveIntensity: 0.8
+                    emissiveIntensity: 2.0
                 });
                 const petal = new THREE.Mesh(pGeo, pMat);
                 petal.rotation.x = -Math.PI / 3; // Angled up

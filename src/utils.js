@@ -35,8 +35,8 @@ export const WATER_VERTEX_SHADER = `
         vec3 pos = position;
 
         // Simple wave equation
-        float elevation = sin(pos.x * 2.0 + uTime * 0.5) * 0.1;
-        elevation += sin(pos.y * 1.5 + uTime * 0.3) * 0.1;
+        float elevation = sin(pos.x * 2.0 + uTime * 0.5) * 0.2;
+        elevation += sin(pos.y * 1.5 + uTime * 0.3) * 0.15;
 
         pos.z += elevation; // Move in Z (since plane is rotated)
         vElevation = elevation;
