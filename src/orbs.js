@@ -126,63 +126,131 @@ export class OrbsManager {
         orbData.collected = true;
         orbData.hitMesh.userData.isInteractable = false;
 
-        // Create Lantern
+        // Burst Effect
+        this.createBurst(orbGroup, orbData.main.material.color);
+
+        // Hide original orb visuals immediately
+        orbData.main.visible = false;
+        orbData.glow.visible = false;
+
+        // Create Lantern (after short delay or immediately? Let's do immediately but start small)
         this.createLantern(orbGroup, orbData.main.material.color);
 
         // Set flag to fly away
         orbData.flying = true;
     }
 
-    createLantern(orbGroup, color) {
-        // Aesthetic lantern: Cylinder frame with paper glow
-        const lanternGroup = new THREE.Group();
-        lanternGroup.position.y = 0.5;
+    createBurst(orbGroup, color) {
+        const particleCount = 20;
+        const geometry = new THREE.BufferGeometry();
+        const positions = [];
+        const velocities = [];
 
-        // Main paper body
-        const paperGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.6, 8);
+        for (let i = 0; i < particleCount; i++) {
+            positions.push(0, 0, 0); // Start at center
+            velocities.push(
+                (Math.random() - 0.5) * 0.1,
+                (Math.random() - 0.5) * 0.1,
+                (Math.random() - 0.5) * 0.1
+            );
+        }
+
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({
+            color: color,
+            size: 0.2,
+            transparent: true,
+            opacity: 1
+        });
+
+        const points = new THREE.Points(geometry, material);
+        orbGroup.add(points);
+
+        // Store for animation
+        this.orbs[orbGroup.userData.index || 0].burst = { points, velocities, life: 1.0 };
+    }
+
+    createLantern(orbGroup, color) {
+        // Aesthetic lantern: Rectangular/Asian style or Cylinder
+        const lanternGroup = new THREE.Group();
+        lanternGroup.position.y = 0.0;
+        lanternGroup.scale.setScalar(0); // Start scale 0 for pop effect
+
+        // Frame color
+        const frameColor = 0x4a3b2a; // Dark wood
+
+        // Main paper body - taller, elegant
+        const paperGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.8, 4); // Boxy cylinder
         const paperMat = new THREE.MeshStandardMaterial({
             color: color,
             emissive: color,
-            emissiveIntensity: 1.0,
+            emissiveIntensity: 2.0, // Brighter!
             transparent: true,
-            opacity: 0.9,
+            opacity: 0.95,
             side: THREE.DoubleSide
         });
         const paper = new THREE.Mesh(paperGeo, paperMat);
+        paper.rotation.y = Math.PI / 4; // Rotate for aesthetic angle
         lanternGroup.add(paper);
 
-        // Top and bottom rims
-        const rimGeo = new THREE.TorusGeometry(0.3, 0.02, 8, 16);
-        const rimMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
+        // Top cap
+        const capGeo = new THREE.BoxGeometry(0.4, 0.05, 0.4);
+        const capMat = new THREE.MeshStandardMaterial({ color: frameColor });
+        const topCap = new THREE.Mesh(capGeo, capMat);
+        topCap.position.y = 0.42;
+        topCap.rotation.y = Math.PI / 4;
+        lanternGroup.add(topCap);
 
-        const topRim = new THREE.Mesh(rimGeo, rimMat);
-        topRim.rotation.x = Math.PI / 2;
-        topRim.position.y = 0.3;
-        lanternGroup.add(topRim);
-
-        const bottomRim = new THREE.Mesh(rimGeo, rimMat);
-        bottomRim.rotation.x = Math.PI / 2;
-        bottomRim.position.y = -0.3;
-        lanternGroup.add(bottomRim);
+        // Bottom cap
+        const bottomCap = new THREE.Mesh(capGeo, capMat);
+        bottomCap.position.y = -0.42;
+        bottomCap.rotation.y = Math.PI / 4;
+        lanternGroup.add(bottomCap);
 
         // Point light inside
-        const light = new THREE.PointLight(color, 1, 5);
+        const light = new THREE.PointLight(color, 2, 8); // Stronger light
         lanternGroup.add(light);
 
         orbGroup.add(lanternGroup);
+        this.orbs[orbGroup.userData.index || 0].lantern = lanternGroup;
     }
 
     update(time) {
         this.orbs.forEach((orb, i) => {
             if (orb.collected) {
+                // Update Burst
+                if (orb.burst && orb.burst.life > 0) {
+                    const pos = orb.burst.points.geometry.attributes.position;
+                    for(let j=0; j<pos.count; j++) {
+                        pos.setXYZ(
+                            j,
+                            pos.getX(j) + orb.burst.velocities[j*3],
+                            pos.getY(j) + orb.burst.velocities[j*3+1],
+                            pos.getZ(j) + orb.burst.velocities[j*3+2]
+                        );
+                    }
+                    pos.needsUpdate = true;
+                    orb.burst.points.material.opacity = orb.burst.life;
+                    orb.burst.life -= 0.02;
+                    if (orb.burst.life <= 0) orb.burst.points.visible = false;
+                }
+
                 if (orb.flying) {
+                     // Scale up lantern if needed
+                     if (orb.lantern && orb.lantern.scale.x < 1) {
+                         orb.lantern.scale.addScalar(0.05);
+                     }
+
                      // Float up
-                     orb.group.position.y += 0.05;
-                     orb.group.position.x += Math.sin(time * 0.001 + i) * 0.01;
-                     orb.group.position.z += Math.cos(time * 0.001 + i) * 0.01;
+                     orb.group.position.y += 0.03;
+                     orb.group.position.x += Math.sin(time * 0.001 + i) * 0.005;
+                     orb.group.position.z += Math.cos(time * 0.001 + i) * 0.005;
 
                      // Gently sway rotation
-                     orb.group.rotation.z = Math.sin(time * 0.002) * 0.1;
+                     if (orb.lantern) {
+                         orb.lantern.rotation.z = Math.sin(time * 0.002 + i) * 0.05;
+                         orb.lantern.rotation.x = Math.cos(time * 0.0015 + i) * 0.05;
+                     }
 
                      if (orb.group.position.y > 30) {
                          orb.group.visible = false;

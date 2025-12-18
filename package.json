@@ -22,6 +22,8 @@
   },
   "homepage": "https://github.com/imsahil37/garden#readme",
   "dependencies": {
+    "playwright": "^1.57.0",
+    "playwright-core": "^1.57.0",
     "three": "^0.182.0",
     "vite": "^7.3.0"
   }
