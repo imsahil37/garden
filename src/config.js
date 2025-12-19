@@ -1,8 +1,8 @@
 export const config = {
   // Recipient Info
   recipient: {
-    name: "HerName",           // Update this to her actual name if you wish
-    nickname: "My Love"        // Used in letter signature
+    name: "pglu",           // Update this to her actual name if you wish
+    nickname: "buddhu"        // Used in letter signature
   },
 
   // Memories (Updated for the "Placement/Distance" context)
@@ -35,7 +35,7 @@ export const config = {
 
   // Love Letter - The Climax
   letter: {
-    content: `My Dearest,
+    content: `Meri Pyari Pglu,
 
 I've been struggling to find the right words to say this in person, so I built this garden for you instead.
 
