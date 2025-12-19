@@ -101,7 +101,7 @@ export class ConstellationManager {
              // Spec says: Act 5 starts after Act 4 Revelation
 
              setTimeout(() => {
-                 state.setAct(5);
+                 state.setAct(6);
              }, 4000);
         }
 

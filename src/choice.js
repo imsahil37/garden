@@ -7,6 +7,7 @@ export class ChoiceManager {
         this.finalMessageView = document.getElementById('final-message-view');
         this.certificateView = document.getElementById('certificate-view');
         this.exploreBtn = document.getElementById('explore-btn');
+        this.exploreMsgBtn = document.getElementById('explore-msg-btn');
 
         this.messageText = document.getElementById('message-text');
         this.cancelMessageBtn = document.getElementById('cancel-message-btn');
@@ -80,11 +81,18 @@ export class ChoiceManager {
              });
         });
 
+        const handleExplore = () => {
+            this.certificateView.classList.add('hidden');
+            this.finalMessageView.classList.add('hidden');
+            // Allow user to explore (UI hidden)
+        };
+
         if (this.exploreBtn) {
-            this.exploreBtn.addEventListener('click', () => {
-                this.certificateView.classList.add('hidden');
-                // Optional: Enable free cam or just hide UI
-            });
+            this.exploreBtn.addEventListener('click', handleExplore);
+        }
+
+        if (this.exploreMsgBtn) {
+            this.exploreMsgBtn.addEventListener('click', handleExplore);
         }
     }
 

@@ -75,7 +75,7 @@ export class LetterManager {
         this.letterView.style.opacity = 0;
         setTimeout(() => {
             this.letterView.classList.add('hidden');
-            state.setAct(6); // Go to Choice
+            state.setAct(3); // Go to Transformation
         }, 500);
     }
 }

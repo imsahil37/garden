@@ -204,7 +204,10 @@ export class TreeManager {
     }
 
     update(time) {
-        if (state.currentAct >= 3 && this.group.scale.x < 1) {
+        // Grow during Act 3, 4, 6 (skip 5 if it comes before)
+        const shouldGrow = state.currentAct === 3 || state.currentAct === 4 || state.currentAct === 6;
+
+        if (shouldGrow && this.group.scale.x < 1) {
             // Grow animation
             const growSpeed = 0.01;
             this.group.scale.addScalar(growSpeed);

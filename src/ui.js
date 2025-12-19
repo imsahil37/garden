@@ -38,6 +38,11 @@ export class UIManager {
         this.memoryPopup.style.opacity = 0;
         setTimeout(() => {
             this.memoryPopup.classList.add('hidden');
+
+            // Check if this was the last memory and trigger Letter (Act 5)
+            if (state.memoriesCollected >= state.totalMemories && state.currentAct < 3) {
+                state.setAct(5); // Letter
+            }
         }, 300);
     }
 

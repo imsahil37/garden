@@ -101,7 +101,8 @@ export class RainbowManager {
     }
 
     update(time) {
-        if (state.currentAct >= 3) {
+        const shouldShow = state.currentAct === 3 || state.currentAct === 4 || state.currentAct === 6;
+        if (shouldShow) {
             if (!this.group.visible) this.group.visible = true;
 
             this.group.children.forEach((mesh, i) => {

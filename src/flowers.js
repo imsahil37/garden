@@ -179,7 +179,8 @@ export class FlowersManager {
 
     update(time) {
         // Grow lotuses in Act 3
-        if (state.currentAct >= 3 && !this.lotusSpawned) {
+        const shouldSpawn = state.currentAct === 3 || state.currentAct === 4 || state.currentAct === 6;
+        if (shouldSpawn && !this.lotusSpawned) {
              this.spawnLotus();
              this.lotusSpawned = true;
         }

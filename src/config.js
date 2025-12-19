@@ -46,7 +46,7 @@ When I tried to reach for you yesterday and you pulled away, it broke my heart, 
 This garden represents us. It might have been neglected for a little while, but the roots are deep, and with a little light, it will bloom again.
 
 Let me hold your hand again?`,
-    signature: "— Your stupid boyfriend ❤️"
+    signature: "— Tera Buddhu ❤️"
   },
 
   // Visual Customization (Kept original settings)

@@ -45,6 +45,14 @@ export const state = {
     if (this.currentAct !== act) {
       this.currentAct = act;
       this.emit('actChanged', act);
+
+      // Handle transitions
+      if (act === 3) {
+        // Transition to Act 4 (Revelation) after transformation (approx 10 seconds)
+        setTimeout(() => {
+            this.setAct(4);
+        }, 10000);
+      }
     }
   },
 
@@ -56,16 +64,7 @@ export const state = {
 
       if (this.memoriesCollected === this.totalMemories) {
         this.emit('allMemoriesCollected');
-        // Transition to next act after a delay
-        setTimeout(() => {
-            this.setAct(3); // Transformation
-
-            // Transition to Act 4 (Revelation) after transformation (approx 10 seconds)
-            setTimeout(() => {
-                this.setAct(4);
-            }, 10000);
-
-        }, 2000);
+        // Transition logic moved to UI (close button) to allow user to read the message first
       }
     }
   }
